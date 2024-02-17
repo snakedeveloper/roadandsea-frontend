@@ -1,0 +1,249 @@
+<div class="file-explorer-container">
+  <div class="top-menu-container">
+
+    <button (click)="dataService.structureHome()" [disabled]="dataService.currentStructure.length < 8"
+      class="top-menu-button" mat-button title="Wróć do folderu głównego">
+      <mat-icon class="refresh-icon">home</mat-icon>
+      <!--Folder główny-->
+    </button>
+
+    <button (click)="dataService.structureBack()" [disabled]="dataService.currentStructure.length < 8"
+      class="top-menu-button" mat-button title="Cofnij do poprzedniego folderu">
+      <mat-icon class="refresh-icon">arrow_back</mat-icon>
+      <!--Cofnij-->
+    </button>
+
+    <button (click)="dataService.setManagerStructure()" class="top-menu-button" mat-button title="Odśwież">
+      <mat-icon class="refresh-icon">refresh</mat-icon>
+      <!--Odśwież-->
+    </button>
+
+    <div class="left-line" *ngIf="dataService.checkIfAdmin()"></div>
+
+    <!-- Jump to order button -->
+    <button *ngIf="dataService.checkIfAdmin()" class="top-menu-button" mat-button [matMenuTriggerFor]="jumpMenu"
+      title="Przejdź do folderu podanego zlecenia">
+      <div id="jump-icon"></div> SKOK DO ZLECENIA
+    </button>
+    <mat-menu class="speder" (click)="$event.stopPropagation();" #jumpMenu="matMenu">
+      <form>
+        <mat-form-field style="width: 279px;" class="sped-form-input" appearance="fill">
+          <mat-label>Podaj nr. zlecenia (np. <b>ZL1234/03/21</b>):</mat-label>
+          <input style="line-height: 20px;" type="text" name='orderId' [(ngModel)]="inputJumpToOrder" matInput
+            (click)="$event.stopPropagation();" #jumpInput matInput />
+        </mat-form-field>
+      </form>
+      <button style="text-align: center;" (click)="jumpToOrderClicked( jumpInput.value );" class="success"
+        mat-menu-item>
+        <span>POTWIERDŹ</span>
+      </button>
+    </mat-menu>
+
+    <!-- Fix order button -->
+    <button *ngIf="dataService.checkIfAdmin()" class="top-menu-button" mat-button [matMenuTriggerFor]="fixMenu"
+      title="Jeśli zlecenie nie dodało się automatycznie, bądź z jakiegoś powodu zlecenia nie widać to użyj tego przycisku">
+      <mat-icon class="refresh-icon">build</mat-icon> DODAJ RĘCZNIE ZLECENIE
+    </button>
+    <mat-menu class="speder" (click)="$event.stopPropagation();" #fixMenu="matMenu">
+      <form>
+        <mat-form-field style="width: 279px;" class="sped-form-input" appearance="fill">
+          <mat-label>Podaj nr. zlecenia (np. <b>ZL1234/03/21</b>):</mat-label>
+          <input style="line-height: 20px;" type="text" name='orderId' [(ngModel)]="inputManualOrder" matInput
+            (click)="$event.stopPropagation();" #fixInput matInput />
+        </mat-form-field>
+      </form>
+      <button style="text-align: center;" (click)="manualOrderClicked( fixInput.value );" class="success" mat-menu-item>
+        <span>POTWIERDŹ</span>
+      </button>
+    </mat-menu>
+
+
+    <div class="left-line" *ngIf="dataService.getCurrentStructureFolderType()"></div>
+
+    <input hidden type="file" #uploaderClient (change)="dataService.addFile($event, 'clientOrder')" accept="*" />
+    <input hidden type="file" #uploaderCarrier (change)="dataService.addFile($event, 'carrierOrder')" accept="*" />
+    <input hidden type="file" #uploaderOther (change)="dataService.addFile($event, 'other')" accept="*" />
+    <button mat-button [class.left-line]="dataService.getCurrentStructureFolderType()"
+      *ngIf="dataService.getCurrentStructureFolderType()" class="top-menu-button success"
+      [matMenuTriggerFor]="addOrderMenu">
+      <mat-icon class="refresh-icon success">add</mat-icon>
+      DODAJ ZLECENIE
+    </button>
+    <mat-menu #addOrderMenu="matMenu">
+      <button [disabled]="dataService.isItemDisabled('clientOrder')" (click)="uploaderClient.click()" mat-menu-item>
+        <mat-icon>badge</mat-icon>
+        <span>Od klienta</span>
+      </button>
+      <button [disabled]="dataService.isItemDisabled('carrierOrder')" mat-menu-item (click)="uploaderCarrier.click()">
+        <mat-icon>local_shipping</mat-icon>
+        <span>Dla przewoźnika</span>
+      </button>
+      <button mat-menu-item (click)="uploaderOther.click()">
+        <mat-icon>help_center</mat-icon>
+        <span>inne</span>
+      </button>
+      <button *ngIf="!(dataService.isClientOrderUploaded === 'Zlecenie zostało anulowane!')" mat-menu-item
+        (click)="dataService.cancelOrder()">
+        <mat-icon>cancel_presentation</mat-icon>
+        <span>Anuluj zlecenie!</span>
+      </button>
+    </mat-menu>
+    <button mat-button [class.left-line]="dataService.getCurrentStructureFolderType()"
+      *ngIf="dataService.getCurrentStructureFolderType()" class="top-menu-button info"
+      [matMenuTriggerFor]="commentsMenu">
+      <mat-icon class="refresh-icon info">add</mat-icon>
+      DODAJ KOMENTARZ
+    </button>
+    <mat-menu class="speder" (click)="$event.stopPropagation();" #commentsMenu="matMenu">
+      <form>
+        <mat-form-field style="width: 279px" class="sped-form-input" appearance="fill">
+          <mat-label>Wpisz komentarz do folderu</mat-label>
+          <textarea style="line-height: 20px;" [rows]="10" type="text" name='spedTransLogTime'
+            [(ngModel)]="dataService.commentToAdd" (click)="$event.stopPropagation();" matInput></textarea>
+        </mat-form-field>
+      </form>
+      <button style="text-align: center;" (click)="dataService.addCommentToFolder()" class="success" mat-menu-item>
+        <span>POTWIERDŹ</span>
+      </button>
+    </mat-menu>
+
+    <!-- Join orders button -->
+    <button *ngIf="dataService.getCurrentStructureFolderType()" class="top-menu-button" mat-button
+      [matMenuTriggerFor]="joinMenu" title="Połącz to zlecenie, w którym przebywasz z podanym zleceniem">
+      <mat-icon class="refresh-icon">compare_arrows</mat-icon>
+      POŁĄCZ ZLECENIA
+    </button>
+    <mat-menu class="speder" (click)="$event.stopPropagation();" #joinMenu="matMenu">
+      <form>
+        <mat-form-field style="width: 279px;" class="sped-form-input" appearance="fill">
+          <mat-label>Podaj nr. zlecenia (np. <b>ZL1234/03/21</b>):</mat-label>
+          <input style="line-height: 20px;" type="text" name='orderId' [(ngModel)]="inputJoinOrder" matInput
+            (click)="$event.stopPropagation();" #joinInput matInput />
+        </mat-form-field>
+      </form>
+      <button style="text-align: center; color: red;" (click)="joinOrderClicked( joinInput.value );" class="success"
+        mat-menu-item>
+        <span>POTWIERDŹ</span>
+      </button>
+    </mat-menu>
+
+    <div class="left-line" *ngIf="dataService.getCurrentStructureFolderType()"></div>
+
+    <button id="comments-button" 
+            [disabled]="(dataService.currentComments.length + dataService.getJoinedOrdersCount()) === 0"
+            [matMenuTriggerFor]="notificationsMenu" #menuTrigger="matMenuTrigger"
+            *ngIf="dataService.getCurrentStructureFolderType()" class="top-menu-button" mat-button>
+      <mat-icon *ngIf="(dataService.currentComments.length + dataService.getJoinedOrdersCount()) < 1"
+                 class="refresh-icon">notifications_off</mat-icon>
+      <mat-icon matBadgeSize="small" 
+        [matBadge]="dataService.getCommentsCount() + (dataService.getJoinedOrdersCount() ? 1 : 0)"
+        [matBadgeHidden]="(dataService.getCommentsCount() + dataService.getJoinedOrdersCount()) < 1"
+        matBadgeColor="warn"
+        *ngIf="(dataService.currentComments.length + dataService.getJoinedOrdersCount()) > 0" class="refresh-icon info"><span
+          class="material-icons">notifications_active</span></mat-icon>
+    </button>
+    
+    <mat-menu style="text-align: center;" #notificationsMenu="matMenu" (click)="$event.stopPropagation();">
+
+      <div class="comment-container" *ngFor="let comment of dataService.currentComments" (click)="$event.stopPropagation();">
+        <span class="comment-date" (click)="$event.stopPropagation();"> {{ comment.dateCreated | date: 'hh:mm:ss dd-MM-yyyy'}} </span>
+        <div class="cloud-container" (click)="$event.stopPropagation();">
+          <span class="author-name" (click)="$event.stopPropagation();"> {{ comment.author }}: </span>
+          <span class="comment-text" (click)="$event.stopPropagation();">{{ comment.comment }}</span>
+        </div>
+      </div>
+
+      <!-- JOINED ORDERS LIST -->
+      <p *ngIf="dataService.getJoinedOrdersCount() > 0" class="joined-orders-title" (click)="$event.stopPropagation();">ZLECENIA POŁĄCZONO:</p>
+
+      <div class="join-container" *ngFor="let order of dataService.currentJoinGroup?.orders" (click)="$event.stopPropagation();">
+        <div class="join-entry-container" (click)="$event.stopPropagation();">
+           {{ order }} 
+        </div>
+      </div>
+
+    </mat-menu>
+  </div>
+  <div [style.height.px]="getSideNavContentHeight()" class="file-content-container">
+    <div class="file-content-right">
+      <div class="content-right-toolbar">
+        <h3>TFT-Zlecenia<span *ngIf="dataService.adresUrl">/</span>{{ dataService.adresUrl }}</h3>
+      </div>
+      <mat-progress-bar *ngIf="dataService.isFoldersLoading" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="dataService.isFileUploading" mode="determinate"
+        [value]="dataService.fileUploadProgressValue | async"></mat-progress-bar>
+
+      <div class="folder-container" [style.height.px]="setRightContentHeight()">
+
+        <button
+          [class.disabled]="folder.hidden && folder.type === 'user' || !(dataService.user.isAdmin) && !dataService.getUserIdPrac(folder.ref) && folder.type === 'user' && dataService.user"
+          *ngFor="let folder of dataService.managerStructure.folders"
+          (dblclick)="dataService.folderDoubleClicked(folder.ref, folder.type)" class="folder-button" mat-icon-button>
+
+          <mat-icon *ngIf="!(folder.type === 'order')" class="folder-icon refresh-icon">folder</mat-icon>
+
+          <mat-icon *ngIf="(folder.type === 'order') && folder.correction || folder.canceled"
+            class="folder-icon refresh-icon success" [class.joined]="folder.joinGroup">rule_folder</mat-icon>
+
+          <mat-icon *ngIf="(folder.type === 'order') && !folder.correction && !folder.canceled"
+            class="folder-icon refresh-icon negative" [class.joined]="folder.joinGroup">rule_folder</mat-icon>
+
+          <span class="button-text-span">{{ isTooLong(folder.folderName) }}</span>
+        </button>
+        <button mat-raised-button *ngFor="let file of sortedFiles(dataService.managerStructure.files); let i = index;"
+          [class]="'file-button ' + file.intent" (contextmenu)="openContextMenu($event, file); $event.preventDefault();"
+          (dblclick)="dataService.openFile(file)">
+          <ng-template let-user #fileMenu>
+            <section class="file-menu">
+              <button class="negative" (click)="dataService.deleteFile(dataService.fileToDeleteIs!)" mat-menu-item>
+                <mat-icon class="negative">delete</mat-icon>
+                <span>Usuń</span>
+              </button>
+            </section>
+          </ng-template>
+
+          <mat-label class="file-intent-label">
+            {{ getIntentLabel( file.intent ) }}
+          </mat-label>
+          <br />
+
+          <embed class="thumbnail" *ngIf="file.iframeUrl !== 'about:blank' &&
+                                          file.extension === 'pdf'"
+            [src]="file.iframeUrl ?? 'about:blank' | safe: 'resourceUrl'" width="320" height="450" scrolling="no"
+            seamless="seamless" type="application/pdf">
+
+          <iframe class="thumbnail" *ngIf="file.iframeUrl !== 'about:blank' &&
+                                           file.extension !== 'pdf'" scrolling="no" seamless="seamless"
+            [src]="file.iframeUrl ?? 'about:blank' | safe: 'resourceUrl'" width='320' height='450' frameborder='0'
+            onload="">
+          </iframe>
+
+          <div *ngIf="file.iframeUrl === 'about:blank' ||
+                      file.iframeUrl == ''" style="width: 320px; height: 410px">
+            Ładowanie...
+          </div>
+          <br />
+
+          <a [href]="file.url | safe: 'resourceUrl'">
+            <span class="file-text-span">{{ isTooLong( file.fileName, 27 ) }}</span>
+          </a>
+        </button>
+      </div>
+
+
+    </div>
+  </div>
+  <div class="comments-container">
+    <div class="comment" *ngIf="dataService.isCarrerOrderUploaded ">
+      <mat-icon class="negative">warning</mat-icon><span class="negative">{{ dataService.isCarrerOrderUploaded }}</span>
+    </div>
+    <div class="comment" *ngIf="dataService.isClientOrderUploaded ">
+      <mat-icon class="negative">warning</mat-icon><span class="negative">{{ dataService.isClientOrderUploaded }}</span>
+    </div>
+  </div>
+</div>
+
+<!--- block clicks when loading --->
+<div class="block-clicks" *ngIf="dataService.isFoldersLoading || dataService.isFileUploading"></div>
+<mat-spinner diameter="200" class="block-clicks-info"
+  *ngIf="dataService.isFoldersLoading || dataService.isFileUploading"></mat-spinner>>

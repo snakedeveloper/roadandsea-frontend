@@ -1,0 +1,69 @@
+<table *ngIf="dataService.user.isAdmin" class="" matSort mat-table [dataSource]="dataService.usersDataSource"
+  class="mat-elevation-z8 mat-table">
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell mat-sort-header *matHeaderCellDef> Imię i Nazwisko </th>
+    <td mat-cell *matCellDef="let element"> {{element.firstName + ' ' + element.lastName}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="email">
+    <th mat-sort-header mat-header-cell *matHeaderCellDef> Email </th>
+    <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="folders">
+    <th mat-header-cell *matHeaderCellDef> Foldery </th>
+    <td mat-cell *matCellDef="let element"> <span
+        [class.success]="dataService.checkFoldersActive(element.foldersHidden) === 'Aktywne'"
+        [class.negative]="dataService.checkFoldersActive(element.foldersHidden) === 'Ukryte'">
+        {{ this.dataService.checkFoldersActive(element.foldersHidden) }}
+      </span> </td>
+  </ng-container>
+
+  <ng-container matColumnDef="role">
+    <th mat-header-cell *matHeaderCellDef> Rola </th>
+    <td mat-cell *matCellDef="let element"> {{dataService.checkRole(element.isAdmin)}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="spedTransLog">
+    <th mat-sort-header mat-header-cell *matHeaderCellDef> Zalogowany w SpedTrans </th>
+    <td mat-cell *matCellDef="let element"> <span [class.success]="isSpedTransLogged(element.inLogUsers) === 'Tak'"
+        [class.negative]="isSpedTransLogged(element.inLogUsers) === 'Nie'">{{ isSpedTransLogged(element.inLogUsers) }}
+        {{ dataService.getLoggedTime(element.uid, element.inLogUsers) }}</span> </td>
+  </ng-container>
+
+  <ng-container matColumnDef="menu">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <button class="riple" mat-icon-button [matMenuTriggerFor]="usersMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #usersMenu="matMenu">
+        <button [disabled]="element.isAdmin" (click)="setAdminButton(element.uid)" mat-menu-item>
+          <mat-icon>how_to_reg</mat-icon>
+          <span>Aktywuj Admina</span>
+        </button>
+        <button [disabled]="!element.isAdmin" (click)="disableAdminButton(element.uid)" mat-menu-item>
+          <mat-icon>no_accounts</mat-icon>
+          <span>Wyłącz Admina</span>
+        </button>
+        <button [disabled]="element.foldersHidden" (click)="hideFoldersButton(element.uid)" mat-menu-item>
+          <mat-icon>cloud_off</mat-icon>
+          <span>Ukryj Foldery</span>
+        </button>
+        <button [disabled]="!element.foldersHidden" (click)="showFoldersButton(element.uid)" mat-menu-item>
+          <mat-icon>cloud_done</mat-icon>
+          <span>Pokaż Foldery</span>
+        </button>
+        <button (click)="dataService.spedTransLogOutUser(element)" [disabled]="!element.inLogUsers" mat-menu-item>
+          <mat-icon>logout</mat-icon>
+          <span>Wyloguj z SpedTrans</span>
+        </button>
+      </mat-menu>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="dataService.usersDisplayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: dataService.usersDisplayedColumns;"></tr>
+</table>
+<mat-paginator class="user-paginator" #usersPaginator [pageSizeOptions]="[100, 50, 25]"></mat-paginator>

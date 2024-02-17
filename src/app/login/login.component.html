@@ -1,0 +1,47 @@
+<mat-card *ngIf="loginService.isOnLogin" class="login-card">
+  <mat-card-subtitle class="text-center">TFT-Zlecenia</mat-card-subtitle>
+  <mat-card-title class="text-center">Logowanie</mat-card-title>
+  <mat-card-content>
+    <form (submit)="onLoginClicked()">
+      <mat-form-field class="login-form-input"  appearance="fill">
+        <mat-label>Email</mat-label>
+        <input [(ngModel)]="emailInput" type="email" matInput [formControl]="emailFormControl" placeholder="Na przykład kowalski@tftlogistic.com">
+        <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+          Podaj poprawny adres e-mail
+        </mat-error>
+        <mat-error *ngIf="emailFormControl.hasError('required')">
+          Adres e-mail jest <strong>wymagany</strong>
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+  <mat-divider inset></mat-divider>
+  <mat-card-actions class="text-center">
+    <button [disabled]='loginLoading' (click)="onLoginClicked()" mat-button>ZALOGUJ SIĘ</button>
+  </mat-card-actions>
+  <mat-card-footer>
+    <mat-progress-bar *ngIf="loginLoading" mode="indeterminate"></mat-progress-bar>
+  </mat-card-footer>
+</mat-card>
+
+<mat-card *ngIf="!loginService.isOnLogin" class="email-sent-card">
+  <div class="icon-container">
+    <mat-icon>forward_to_inbox</mat-icon>
+  </div>
+  <mat-card-subtitle class="text-center card-subtitle">Potwierdź swój adres e-mail</mat-card-subtitle>
+  <mat-card-title class="text-center card-title">Link do logowania został wysłany na adres e-mail:</mat-card-title>
+  <p class="text-center email-text">{{ loginService.emailSent }}</p>
+  <mat-card-content>
+  </mat-card-content>
+  <mat-divider class="divider-dialog" inset></mat-divider>
+  <mat-card-actions class="text-center">
+    <mat-card-title class="text-center card-title">
+      Link nie dotarł?
+    </mat-card-title>
+    <p class="small-text">Sprawdź folder spam</p>
+    <button (click)="loginService.changeBackToLogin()" mat-button>WYŚLIJ LINK PONOWNIE</button>
+  </mat-card-actions>
+  <mat-card-footer>
+    <mat-progress-bar *ngIf="loginLoading" mode="indeterminate"></mat-progress-bar>
+  </mat-card-footer>
+</mat-card>

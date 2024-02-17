@@ -1,0 +1,15 @@
+<div class="icon-container">
+<mat-icon aria-hidden="false" 
+[class.warning-dialog]="data.iconColor === 'warning'" 
+[class.neutral-dialog]="data.iconColor === 'neutral'" 
+[class.positive-dialog]="data.iconColor === 'positive'" 
+>
+{{data.topIcon}}
+</mat-icon>
+<mat-divider class="mat-divider-dialog"></mat-divider>
+</div>
+<div class="dialog-simple-text" mat-dialog-content [innerHTML]="data.dialogText"></div>
+
+<div class="button-container" mat-dialog-actions>
+  <button mat-button mat-dialog-close>{{ data.button }}</button>
+</div>

@@ -1,0 +1,62 @@
+<mat-toolbar class="toolbar-top">
+  <button (click)="toggleSideNav()" mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span id="site-title">TFT-Zlecenia</span>
+  <div *ngIf="this.dataService.user.isAdmin" class="sped">
+    &nbsp; &nbsp; - &nbsp; &nbsp; <mat-icon>settings</mat-icon> &nbsp;
+    <span class="settings-text">Wyloguj nieaktywnych ze SpedTrans po: <span class="success">{{
+        dataService.sql.spedTransLogTime }} min. </span></span>
+    <div class="riple">
+      <button class="button" mat-icon-button [matMenuTriggerFor]="spedLogMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu class="speder" (click)="$event.stopPropagation();" #spedLogMenu="matMenu">
+        <form>
+          <mat-form-field class="sped-form-input" appearance="fill">
+            <mat-label>Podaj liczbę w minutach</mat-label>
+            <input style="height: 25px;" type="text" name='spedTransLogTime'
+              [(ngModel)]="dataService.spedTransLogTimeSetter" (click)="$event.stopPropagation();" matInput>
+          </mat-form-field>
+        </form>
+        <button (click)="dataService.setAutoLogOffTime()" class="success" mat-menu-item>
+          <mat-icon class="success">done</mat-icon>
+          <span>POTWIERDŹ</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <span class="toolbar-spacer"></span>
+  <span>{{ dataService.user.firstName }} {{ dataService.user.lastName }}</span>
+  <button [matMenuTriggerFor]="userMenu" mat-icon-button>
+    <mat-icon>account_circle</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button (click)="loginService.logOut()" mat-menu-item>
+      <mat-icon>logout</mat-icon>
+      <span>Wyloguj</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+<mat-progress-bar *ngIf="dataService.IsUserTableLoading" mode="indeterminate"></mat-progress-bar>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav [class.fake-disabled]="dataService.isFoldersLoading || dataService.isFileUploading"
+    [(opened)]="isSideNavOpened" class="sidenav" mode="side">
+
+    <mat-nav-list>
+      <a [class.disabled]="!nav.display && nav.adminOnly == this.dataService.user.isAdmin" mat-list-item
+        [routerLink]="nav.link" *ngFor="let nav of navList" class="sidenav-item">
+        <mat-icon>{{nav.icon}}</mat-icon> &nbsp; {{nav.name}}
+      </a>
+    </mat-nav-list>
+
+  </mat-sidenav>
+
+  <!-- content -->
+  <mat-sidenav-content #sidecontent class="sidenav-content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

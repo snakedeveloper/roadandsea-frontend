@@ -1,0 +1,455 @@
+/* You can add global styles to this file, and also import other style files */
+@use "~@angular/material" as mat;
+
+@include mat.core();
+@import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap');
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Google Sans" !important;
+}
+
+/**
+ * Color pallete
+ */
+.success {
+  color: #22bb33 !important;
+}
+.negative {
+  color: #bb2124 !important;
+}
+.neutral {
+  color: #f0ad4e !important;
+}
+.joined {
+  color: #FFE9A2 !important;
+}
+
+.info {
+  color: #5bc0de !important;
+}
+
+/**
+ * All rounded styles
+ */
+.text-center {
+  text-align: center;
+}
+
+/**
+ * Login component styles
+ */
+.login-card {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 400px;
+}
+
+.login-form-input {
+  margin-top: 20px;
+  width: 100%;
+}
+
+/**
+ * Login email sent card styles
+ */
+.email-sent-card {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 400px;
+}
+.email-sent-card .icon-container {
+  width: 100%;
+  text-align: center;
+}
+.email-sent-card .icon-container mat-icon {
+  font-size: 70px;
+  height: 70px;
+  width: 70px;
+}
+.email-sent-card .card-subtitle {
+  font-size: 26px;
+  padding-top: 15px;
+}
+.email-sent-card .card-title {
+  font-size: 14px;
+  padding-top: 5px;
+}
+.email-sent-card .small-text {
+  font-size: 13px;
+  font-weight: 100;
+}
+.email-sent-card .divider-dialog {
+  padding-bottom: 15px;
+}
+.email-sent-card .email-text {
+  margin-bottom: 25px;
+}
+
+/**
+ * Dialog components styles
+ */
+
+//Simple Dialog
+.positive-dialog {
+  color: #00ff00;
+}
+.neutral-dialog {
+  color: #1e92f4;
+}
+.warning-dialog {
+  color: #ff3333;
+}
+.dialog-simple-text {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
+.icon-container {
+  text-align: center;
+  padding-bottom: 10px;
+}
+.icon-container mat-icon {
+  font-size: 45px;
+  height: 45px;
+  width: 45px;
+}
+.button-container {
+  justify-content: center;
+  padding-bottom: 15px !important;
+  padding-top: 15px !important;
+}
+.button-container button {
+  font-size: 15px;
+}
+.mat-divider-dialog {
+  margin-top: 15px !important;
+  margin-bottom: 15px !important;
+}
+/**
+ * Toolbar styles
+ */
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+.toolbar-top {
+  font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial;
+  font-size: x-large;
+
+  min-height: 8% !important;
+  max-height: 8% !important;
+
+  color: white;
+  background-color: #262533;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+}
+
+/**
+ * Sidenav styles
+ */
+.sidenav-container {
+  height: 92%;
+}
+.sidenav-content {
+  align-items: center;
+  justify-content: center;
+}
+
+.sidenav {
+  width: 200px;
+
+  // logo using background image in the bottom center
+  background-image: url("./assets/logo.png");
+  background-repeat: no-repeat;
+  background-position: center bottom 20px;
+  background-size: contain;
+  background-color: #fafafa;
+  height: 100%;
+}
+
+.sidenav-item:hover {
+  background-color: #f0f0f0;
+}
+
+/**
+ * File Explorer styles
+ */
+.file-explorer-container {
+  min-width: 1024px;
+  width: 100%;
+  background: white;
+  height: 100%;
+}
+.top-menu-container {
+  width: 100%;
+  min-width: 665px;
+  height: 42px;
+  background: #fafafa;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+  display: flex;
+}
+.left-line {
+  border-left: solid 1px rgba(0, 0, 0, 0.12);
+}
+.file-content-container {
+  width: 100%;
+  display: flex;
+  height: 100%;
+}
+.file-content-left {
+  width: 25%;
+  height: auto;
+  border-right: solid 1px rgba(0, 0, 0, 0.12);
+  background: white;
+  min-width: 200px;
+  min-height: 300px;
+}
+.file-content-right {
+  width: 100%;
+  height: auto;
+  background: white;
+  min-width: 300px;
+  min-height: 300px;
+}
+
+.top-menu-button {
+  font-family: 'Pragati Narrow', 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  height: 43px;
+}
+
+.comments-container {
+  width: 100%;
+  height: 100px;
+  background: #fafafa;
+  border-top: solid 1px rgba(0, 0, 0, 0.12);
+  min-width: 500px;
+  min-height: 100px;
+  display: inline-block;
+}
+.comment {
+  margin-left: 10px;
+  margin-top: 10px;
+  display: flex;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 26px;
+}
+.comment span {
+  margin-left: 10px;
+}
+.comment mat-icon {
+  font-size: 24px;
+  height: 24px;
+  width: 24px;
+}
+.refresh-icon {
+  height: 27px !important;
+  margin-left: 3px;
+}
+
+.folder-icon {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #080000;
+}
+
+.content-right-toolbar {
+  height: 33px;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+  min-width: 480px;
+}
+.content-right-toolbar h3 {
+  height: 100%;
+  line-height: 33px;
+  padding-left: 15px;
+}
+.folder-button {
+  margin-left: 60px !important;
+  margin-top: 56px !important;
+  width: 53px !important;
+  height: 29px !important;
+  line-height: 53px !important;
+  transition: all 0.5s;
+}
+
+.file-button {
+  margin-left: 60px !important;
+  margin-top: 56px !important;
+  transition: all 0.5s;
+}
+
+.file-intent-label {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.folder-container {
+  padding-right: 2%;
+  padding-left: 2%;
+  overflow: auto;
+}
+.folder-button mat-icon {
+  font-size: 50px !important;
+  height: 50px !important;
+  width: 50px !important;
+  color: #8f8f8f;
+  transition: all 0.5s;
+}
+.folder-button:hover mat-icon {
+  opacity: 0.6;
+  font-size: 51px !important;
+  transition: all 0.5s;
+}
+
+.button-text-span {
+  display: block;
+  margin-top: -34px;
+  font-size: 13px;
+  font-weight: 400;
+  width: 120px !important;
+  margin-left: -31px;
+}
+
+.disabled {
+  display: none !important;
+}
+
+.fake-disabled {
+  pointer-events: none !important;
+  opacity: 0.5;
+  background-color: rgba(135, 135, 135, 0.35) !important;
+}
+
+// File contextmenu
+
+.file-menu {
+  background-color: #fafafa;
+  padding: 4pt;
+  font-size: 10pt;
+  z-index: 1000;
+  box-shadow: 0 0 12pt rgba(0, 0, 0, 0.25);
+  border-radius: 4pt;
+  padding: 0.5em 0 0.5em 0;
+  animation: fadeIn 0.1s ease-out;
+  opacity: 1;
+  display: block;
+}
+
+// MAT TABLE
+.mat-table {
+  width: 100%;
+}
+tr.mat-row:hover {
+  background: #f5f5f5;
+}
+tr:hover .riple {
+  opacity: 1;
+  transition: all 0.2s;
+}
+tr .riple {
+  opacity: 0;
+  transition: all 0.2s;
+}
+
+.user-paginator {
+  border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+}
+
+.sped:hover .riple {
+  opacity: 1;
+  transition: all 0.2s;
+}
+.sped .riple {
+  opacity: 0;
+  transition: all 0.2s;
+}
+.sped {
+  display: contents;
+}
+
+.sped .button {
+  margin-bottom: 2px;
+}
+
+.settings-text {
+  font-size: 0.89em;
+}
+
+.speder .mat-menu-content:not(:empty) {
+  padding: 0 !important;
+}
+
+//COMMENTS
+.comment-date {
+  font-size: 0.8875rem;
+  color: #8a8d91;
+  text-align: center;
+  font-weight: 600;
+}
+.comment-container {
+  width: 279px !important;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+
+
+.cloud-container {
+  font-size: 0.9375rem;
+  padding: 13px;
+  text-align: left;
+  border-radius: 10px;
+  background-color: #e4e6eb;
+  width: 80%;
+  margin-left: 6%;
+  margin-right: 10%;
+}
+
+.joined-orders-title {
+  font-family: 'Pragati Narrow', 'Roboto', sans-serif;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.join-container {  
+  text-align: center;
+  background-color: #FFE9A2;
+
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.join-entry-container {
+  font-family: 'Roboto', sans-serif;
+  font-size: x-large;
+  font-weight: 500;
+  text-align: center;
+}
+
+.author-name {
+  font-weight: 700;
+}

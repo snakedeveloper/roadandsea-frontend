@@ -23,7 +23,7 @@ export class AppComponent {
   /**
      * If user is logged in it will set User Data in dataService
      */
-      const storage_check = localStorage.getItem('sid')
+      const storage_check = localStorage.getItem('rs-sid')
       if (storage_check) {
         this.loginService.setUser();
         this.router.navigate(['orders'])

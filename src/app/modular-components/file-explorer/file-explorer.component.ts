@@ -142,7 +142,7 @@ export class FileExplorerComponent implements AfterViewChecked {
       this.dataService.isFoldersLoading = true;
 
       const request: ImportOrderRequest = {
-        sid: localStorage.getItem( 'sid' ) ?? "",
+        sid: localStorage.getItem( 'rs-sid' ) ?? "",
         order: id
       }
 

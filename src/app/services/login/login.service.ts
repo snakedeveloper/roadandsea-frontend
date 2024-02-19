@@ -20,12 +20,12 @@ export class LoginService {
     public router: Router,
     public dataService: DataService,
     public dialogService: DialogService,
-  ) { }
+  ) {}
   /**
    * Loginservice Variables
    */
   isOnLogin: boolean = true;
-  emailSent: String = ''
+  emailSent: String = '';
   /**
    * Function to check if user exist in firebase database and spedtrans database and start sendLinkToEmail if exist.
    * @param email - string with email to log-in
@@ -33,20 +33,20 @@ export class LoginService {
   async checkUser( email: string ) {
     if ( this.validateEmail( email ) ) {
       try {
-        let check_user_request = {} as CheckUserRequest
-        check_user_request.email = email
-        const api_result = await this.http.post( `${this.dataService.apiAdres}/checkUser`, check_user_request ).toPromise() as CheckUserReply
+        let check_user_request = {} as CheckUserRequest;
+        check_user_request.email = email;
+        const api_result = await this.http.post( `${this.dataService.apiAdres}/checkUser`, check_user_request ).toPromise() as CheckUserReply;
         console.log( 'Response is: ', api_result );
         if ( api_result.result ) {
           this.sendLinkToEmail( email );
-          this.emailSent = email
-          this.changeToEmailSent()
+          this.emailSent = email;
+          this.changeToEmailSent();
           this.dialogService.openSimpleDialog(
             'Link do logowania został wysłany na podany adres Email.<br> Sprawdź skrzynkę pocztową.',
             'OK', 'positive'
           );
         } else {
-          this.dialogService.openSimpleDialog( api_result.message, 'OK', 'warning' )
+          this.dialogService.openSimpleDialog( api_result.message, 'OK', 'warning' );
         }
 
       } catch ( error ) {
@@ -60,7 +60,7 @@ export class LoginService {
       this.dialogService.openSimpleDialog(
         'Niepoprawny adres Email. <br/> Sprawdź pisownie.',
         'OK', 'warning'
-      )
+      );
     }
 
 
@@ -74,15 +74,15 @@ export class LoginService {
     const actionCodeSetting = {
       url: 'https://tftlogistic.com/rs-zlecenia/create-session',
       handleCodeInApp: true
-    }
+    };
     try {
       await this.afAuth.sendSignInLinkToEmail(
         email,
         actionCodeSetting
       );
-      localStorage.setItem( 'email', email );
+      localStorage.setItem( 'rs-email', email );
     } catch ( error ) {
-      window.alert( error )
+      window.alert( error );
     }
   }
 
@@ -92,10 +92,10 @@ export class LoginService {
    */
   async createTokenSession( url: string ) {
     try {
-      var userEmail = ( localStorage.getItem( 'email' ) || '' )
-      console.log( 'user is: ', userEmail )
+      var userEmail = ( localStorage.getItem( 'rs-email' ) || '' );
+      console.log( 'user is: ', userEmail );
       if ( !userEmail ) {
-        userEmail = window.prompt( 'Podaj swój adres e-mail' ) || ''
+        userEmail = window.prompt( 'Podaj swój adres e-mail' ) || '';
       }
       await this.afAuth.signInWithEmailLink( userEmail, url ).then( ( user ) => {
         var sessionRequest = {} as CreateSessionRequest;
@@ -105,29 +105,29 @@ export class LoginService {
         }
         this.http.post( `${this.dataService.apiAdres}/createSession`, sessionRequest ).subscribe( async ( response ) => {
           const session_reply = response as CreateSessionReply;
-          console.log( 'sessionRelpy sid is: ', session_reply.sid )
+          console.log( 'sessionRelpy sid is: ', session_reply.sid );
           if ( session_reply ) {
-            localStorage.setItem( 'sid', session_reply.sid );
-            localStorage.setItem( 'id', session_reply.id.toString() );
-            localStorage.setItem( 'idPrac', session_reply.idPrac.toString() );
-            localStorage.setItem( 'uid', session_reply.uid.toString() );
-            localStorage.setItem( 'firstName', session_reply.firstName );
-            localStorage.setItem( 'lastName', session_reply.lastName );
-            localStorage.setItem( 'email', session_reply.email );
-            localStorage.setItem( 'isAdmin', String( session_reply.isAdmin ) );
+            localStorage.setItem( 'rs-sid', session_reply.sid );
+            localStorage.setItem( 'rs-id', session_reply.id.toString() );
+            localStorage.setItem( 'rs-idPrac', session_reply.idPrac.toString() );
+            localStorage.setItem( 'rs-uid', session_reply.uid.toString() );
+            localStorage.setItem( 'rs-firstName', session_reply.firstName );
+            localStorage.setItem( 'rs-lastName', session_reply.lastName );
+            localStorage.setItem( 'rs-email', session_reply.email );
+            localStorage.setItem( 'rs-isAdmin', String( session_reply.isAdmin ) );
             this.setUser().then( () => {
-              this.dataService.navList[1].display = this.dataService.checkIfAdmin()
-            } )
-            this.router.navigate( ['orders'] )
+              this.dataService.navList[1].display = this.dataService.checkIfAdmin();
+            } );
+            this.router.navigate( ['orders'] );
           }
           else {
             this.router.navigate( ['login'] );
-            alert( 'Błąd #00001' )
+            alert( 'Błąd #00001' );
           }
         } );
-      } )
+      } );
     } catch ( error: any ) {
-      let errorCode = error.code
+      let errorCode = error.code;
       switch ( error.code ) {
         case "ERROR_EMAIL_ALREADY_IN_USE":
         case "account-exists-with-different-credential":
@@ -155,14 +155,14 @@ export class LoginService {
           errorCode = "Adres e-mail jest nieprawidłowy.";
           break;
         case 'auth/invalid-action-code':
-          errorCode = 'Ten link został już użyty. Zaloguj się ponownie.'
+          errorCode = 'Ten link został już użyty. Zaloguj się ponownie.';
           break;
         default:
           errorCode = "Logowanie nie powiodło się. Proszę spróbować ponownie.";
           break;
       }
       this.dialogService.openSimpleDialog( errorCode, 'OK', 'warning' );
-      this.router.navigate( ['login'] )
+      this.router.navigate( ['login'] );
     }
   }
 
@@ -171,8 +171,8 @@ export class LoginService {
    * @returns -boolean that will check if token on the server is correct and tells if user is arleady logged in
    */
   async isLoggedIn(): Promise<boolean> {
-    const current_session = { sid: localStorage.getItem( 'sid' ) } as AuthUserRequest;
-    console.log( 'sid is before question is: ', current_session.sid )
+    const current_session = { sid: localStorage.getItem( 'rs-sid' ) } as AuthUserRequest;
+    console.log( 'sid is before question is: ', current_session.sid );
 
     try {
       const result = ( await this.http.post( `${this.dataService.apiAdres}/authUser`, current_session ).toPromise() ) as AuthUserReply;
@@ -180,17 +180,26 @@ export class LoginService {
 
       if ( !result.result ) {
         console.log( 'Deleting cookies..' );
-        this.dialogService.openSimpleDialog( 'Utracono połączenie z sesją. Zaloguj się jeszcze raz', 'OK', 'warning' )
-        localStorage.clear();
+        this.dialogService.openSimpleDialog( 'Utracono połączenie z sesją. Zaloguj się jeszcze raz', 'OK', 'warning' );
+
+        // Iterate over all keys in localStorage
+        for ( let i = 0; i < localStorage.length; i++ ) {
+          // Get key name
+          const key = localStorage.key( i );
+          // If key starts with 'rs-', remove it
+          if ( key && key.startsWith( 'rs-' ) ) {
+            localStorage.removeItem( key );
+          }
+        }
       }
 
-      console.log( 'isLoggedIn() result is: ', result.result )
+      console.log( 'isLoggedIn() result is: ', result.result );
       return result.result;
     } catch ( error ) {
       this.dialogService.openSimpleDialog(
         'Nawiązanie połączenia z serwerem nie powiodło się. <br/> Proszę sprawdzić połączenie z internetem',
         'OK', 'warning'
-      )
+      );
       console.dir( error );
       return false;
     }
@@ -201,15 +210,15 @@ export class LoginService {
    * @returns -User data from firebase.
    */
   async setUser() {
-    const uid = localStorage.getItem( 'uid' )
+    const uid = localStorage.getItem( 'rs-uid' );
     this.dataService.store.doc( `users/${uid}` ).valueChanges().subscribe( u => {
-      this.dataService.user = u as User
-      console.log( 'User is: ', this.dataService.user )
-      this.dataService.navList[1].display = this.dataService.checkIfAdmin()
-      this.dataService.store.doc<Sql>( 'rns-config/sql' ).valueChanges().subscribe( sql => {
-        this.dataService.sql = sql as Sql
-      } )
-    } )
+      this.dataService.user = u as User;
+      console.log( 'User is: ', this.dataService.user );
+      this.dataService.navList[1].display = this.dataService.checkIfAdmin();
+      this.dataService.store.doc<Sql>( 'config/sql' ).valueChanges().subscribe( sql => {
+        this.dataService.sql = sql as Sql;
+      } );
+    } );
 
   }
 
@@ -232,6 +241,6 @@ export class LoginService {
    */
   logOut() {
     localStorage.clear();
-    this.router.navigate( ['login'] )
+    this.router.navigate( ['login'] );
   }
 }

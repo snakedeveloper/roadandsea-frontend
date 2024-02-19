@@ -27,9 +27,9 @@ export class DataService {
   /**
    * Envoirment variables:
    */
-  apiAdres: string = 'https://tft-rs-zlecenia-6655964ef121.herokuapp.com'
+  apiAdres: string = 'https://tft-rs-zlecenia-6655964ef121.herokuapp.com';
   // apiAdres: string = 'http://localhost:5000';
-  readonly ORDERS: string = 'rns-orders';
+  readonly ORDERS: string = 'orders';
   readonly USERS = 'users';
   /**
  * LOADINGS
@@ -127,7 +127,7 @@ export class DataService {
     console.log( 'getting users' );
     this.managerStructure.folders = [];
     this.managerStructure.files = [];
-    this.store.doc( `${this.USERS}/${localStorage.getItem( 'uid' )}` ).get().subscribe( user => {
+    this.store.doc( `${this.USERS}/${localStorage.getItem( 'rs-uid' )}` ).get().subscribe( user => {
       if ( user ) {
         const currentuser = user.data() as User;
         if ( currentuser.managerLastRef_RS )
@@ -776,7 +776,7 @@ export class DataService {
     this.IsUserTableLoading = true;
     let api_request = {} as LogoutSpedTransRequest;
     api_request.initials = user.initials;
-    api_request.sid = localStorage.getItem( 'sid' )!;
+    api_request.sid = localStorage.getItem( 'rs-sid' )!;
     console.log( 'Current sid is: ', api_request.sid );
     let api_response = {} as LogoutSpedTransReply;
     api_response = ( await this.http.post( `${this.apiAdres}/logoutSpedTrans`, api_request ).toPromise().catch(
@@ -801,7 +801,7 @@ export class DataService {
   }
 
   setAutoLogOffTime() {
-    this.store.doc<Sql>( 'rns-config/sql' ).update( { spedTransLogTime: this.spedTransLogTimeSetter } ).then( () => {
+    this.store.doc<Sql>( 'config/sql' ).update( { spedTransLogTime: this.spedTransLogTimeSetter } ).then( () => {
       this.spedTransLogTimeSetter = null;
     } );
   }

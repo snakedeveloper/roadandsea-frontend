@@ -10,7 +10,7 @@ import { LoginService } from './services/login/login.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'tft-zlecenia';
+  title = 'TFT: Road&Sea - zlecenia';
 
   constructor( 
     public router: Router, 

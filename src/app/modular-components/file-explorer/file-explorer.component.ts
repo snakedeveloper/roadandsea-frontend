@@ -1,19 +1,16 @@
-import { DomSanitizer } from '@angular/platform-browser';
-import { ImportOrderRequest } from './../../templates/auth/requests';
-import { OverlayRef, Overlay } from '@angular/cdk/overlay';
+import { Overlay } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AfterViewChecked, ChangeDetectorRef, Component, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { Subscription, fromEvent } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { DataService } from 'src/app/services/data/data.service';
-import { Folder } from 'src/app/templates/file-manager/folder';
-import { File } from 'src/app/templates/file-manager/file';
-import { MatInput } from '@angular/material/input';
-import { HttpClient } from '@angular/common/http';
 import { ImportOrderReply } from 'src/app/templates/auth/replies';
-import { SafePipe } from 'src/app/classes/safe-pipe';
 import { JoinGroup } from 'src/app/templates/file-manager/JoinGroup';
+import { File } from 'src/app/templates/file-manager/file';
+import { Folder } from 'src/app/templates/file-manager/folder';
+import { ImportOrderRequest } from './../../templates/auth/requests';
 
 @Component( {
   selector: 'app-file-explorer',
@@ -37,7 +34,7 @@ export class FileExplorerComponent implements AfterViewChecked {
     public http: HttpClient,
     private cdref: ChangeDetectorRef
   ) {
-    this.table = this.dataService.fileManagerTableName;
+    this.table = this.dataService.ORDERS;
 
   }
 
@@ -309,8 +306,6 @@ export class FileExplorerComponent implements AfterViewChecked {
     const regex = this.dataService.currentStructure.match( /.*years\/\d{2}(\d{2})\/months\/0?(1?\d)\/orders\/(ZL\d{4})/i );
 
     if ( regex ) {
-
-
       return `${regex[3]}/${this.addLeadingZero( regex[2] )}/${regex[1]}`;
     } else {
       return "null";

@@ -1,7 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
-@use "~@angular/material" as mat;
+@use '@angular/material' as mat;
 
 @include mat.core();
+
+$my-primary: mat.define-palette(mat.$orange-palette, 500);
+$my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+$my-theme: mat.define-light-theme((
+ color: (
+   primary: $my-primary,
+   accent: $my-accent,
+ ),
+ typography: mat.define-typography-config(),
+ density: 0,
+));
+
+@include mat.all-component-themes($my-theme);
+
 @import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap');
 
 html,
@@ -153,7 +167,7 @@ body {
   max-height: 8% !important;
 
   color: white;
-  background-color: #262533;
+  background-color: orangered;
   border-bottom: solid 1px rgba(0, 0, 0, 0.12);
 }
 
@@ -172,7 +186,7 @@ body {
   width: 200px;
 
   // logo using background image in the bottom center
-  background-image: url("./assets/logo.png");
+  background-image: url("./assets/logo1.jpg");
   background-repeat: no-repeat;
   background-position: center bottom 20px;
   background-size: contain;

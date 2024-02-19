@@ -72,7 +72,7 @@ export class LoginService {
    */
   async sendLinkToEmail( email: string ) {
     const actionCodeSetting = {
-      url: 'https://tftlogistic.com/zlecenia/create-session',
+      url: 'https://tftlogistic.com/rs-zlecenia/create-session',
       handleCodeInApp: true
     }
     try {
@@ -202,11 +202,11 @@ export class LoginService {
    */
   async setUser() {
     const uid = localStorage.getItem( 'uid' )
-    this.dataService.store.doc( `users/${uid}` ).valueChanges().subscribe( u => {
+    this.dataService.store.doc( `rns-users/${uid}` ).valueChanges().subscribe( u => {
       this.dataService.user = u as User
       console.log( 'User is: ', this.dataService.user )
       this.dataService.navList[1].display = this.dataService.checkIfAdmin()
-      this.dataService.store.doc<Sql>( 'config/sql' ).valueChanges().subscribe( sql => {
+      this.dataService.store.doc<Sql>( 'rns-config/sql' ).valueChanges().subscribe( sql => {
         this.dataService.sql = sql as Sql
       } )
     } )

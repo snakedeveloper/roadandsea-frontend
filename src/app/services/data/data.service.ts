@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { User } from 'src/app/templates/data/user';
 import { File } from 'src/app/templates/file-manager/file';
 import { Folder } from 'src/app/templates/file-manager/folder';
-import { ManagerStructure } from 'src/app/templates/file-manager/managerStructure'
+import { ManagerStructure } from 'src/app/templates/file-manager/managerStructure';
 import { finalize } from 'rxjs/operators';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { DialogService } from '../dialog.service';
@@ -27,9 +27,10 @@ export class DataService {
   /**
    * Envoirment variables:
    */
-  apiAdres: string = 'https://tft-zlecenia-node.herokuapp.com'
-  //apiAdres: string = 'http://localhost:5000';
-  fileManagerTableName: string = 'covid19'
+  apiAdres: string = 'https://tft-rs-zlecenia.herokuapp.com'
+  // apiAdres: string = 'http://localhost:5000';
+  readonly ORDERS: string = 'rns-orders';
+  readonly USERS = 'rns-users';
   /**
  * LOADINGS
  */
@@ -40,21 +41,21 @@ export class DataService {
   /**
    * CONFIG
    */
-  sql = {} as Sql
+  sql = {} as Sql;
   spedTransLogTimeSetter: any;
 
   /**
    * User Table
    */
-  users_table_data: User[] = []
+  users_table_data: User[] = [];
   usersDisplayedColumns: string[] = ['name', 'email', 'folders', 'spedTransLog', 'role', 'menu'];
   usersDataSource: any;
-  userTimerCounters: TimerCounter[] = []
+  userTimerCounters: TimerCounter[] = [];
 
   /**
    * User data taken from firebase after logged in.
    */
-  user = {} as User
+  user = {} as User;
   /**
      * SideNavContent height in px;
      */
@@ -62,10 +63,10 @@ export class DataService {
   /**
      * File Manager
      */
-  managerStructure = {} as ManagerStructure
-  userFolders = [] as Folder[]
+  managerStructure = {} as ManagerStructure;
+  userFolders = [] as Folder[];
 
-  currentStructure: string = this.fileManagerTableName
+  currentStructure: string = this.ORDERS;
 
   navList: NavList[] = [
     /*{ ----------------- Maybe later
@@ -89,10 +90,10 @@ export class DataService {
       display: true,
       adminOnly: "true"
     }
-  ]
+  ];
 
-  commentToAdd: string = ''
-  currentComments: Comment[] = []
+  commentToAdd: string = '';
+  currentComments: Comment[] = [];
   currentCommentsToAdd: any;
 
   fileUploadProgressValue: Observable<number | undefined> | undefined;
@@ -102,8 +103,8 @@ export class DataService {
   sub: Subscription | undefined;
   fileToDeleteIs: File | undefined;
   adresUrl: String = '';
-  isClientOrderUploaded: String = ''
-  isCarrerOrderUploaded: String = ''
+  isClientOrderUploaded: String = '';
+  isCarrerOrderUploaded: String = '';
   messageShowed: boolean = false;
 
   currentJoinGroup: JoinGroup | undefined;
@@ -114,7 +115,7 @@ export class DataService {
     public storage: AngularFireStorage,
     public dialogService: DialogService,
     public http: HttpClient,
-  ) { }
+  ) {}
 
   //FILE MANAGER SECTION
 
@@ -124,35 +125,35 @@ export class DataService {
   setManagerStructure() {
     //this.isFoldersLoading = true
     console.log( 'getting users' );
-    this.managerStructure.folders = []
-    this.managerStructure.files = []
-    this.store.doc( `users/${localStorage.getItem( 'uid' )}` ).get().subscribe( user => {
+    this.managerStructure.folders = [];
+    this.managerStructure.files = [];
+    this.store.doc( `${this.USERS}/${localStorage.getItem( 'uid' )}` ).get().subscribe( user => {
       if ( user ) {
-        const currentuser = user.data() as User
+        const currentuser = user.data() as User;
         if ( currentuser.managerLastRef )
-          this.currentStructure = currentuser.managerLastRef
-        this.loadComments()
-        this.setUrlStructure()
-        console.log( 'current structure is: ', this.currentStructure )
+          this.currentStructure = currentuser.managerLastRef;
+        this.loadComments();
+        this.setUrlStructure();
+        console.log( 'current structure is: ', this.currentStructure );
         if ( this.loadFolders() ) {
           if ( this.loadFiles() ) {
             //this.isFoldersLoading = false
           }
         }
       }
-    } )
+    } );
   }
 
   loadFolders(): boolean {
     const folders = this.store.collection( this.currentStructure, sort =>
-      sort.orderBy( 'folderName', 'asc' ) ).get()
-    let promiseFolder: Folder[] = []
+      sort.orderBy( 'folderName', 'asc' ) ).get();
+    let promiseFolder: Folder[] = [];
     folders.subscribe( foldersData => {
       foldersData.forEach( folderData => {
         if ( folderData ) {
-          const get_type = folderData.data() as File
+          const get_type = folderData.data() as File;
           if ( get_type.type !== 'file' ) {
-            const folder_reply = folderData.data() as Folder
+            const folder_reply = folderData.data() as Folder;
             const folder: Folder = {
               folderName: folder_reply.folderName,
               ref: folder_reply.ref,
@@ -161,31 +162,31 @@ export class DataService {
               correction: false,
               hidden: folder_reply.hidden,
               canceled: folder_reply.canceled
-            }
+            };
 
             promiseFolder.push( folder );
           }
         }
         Promise.all( promiseFolder ).then( result => {
-          this.isOrderUploaded()
+          this.isOrderUploaded();
           this.managerStructure.folders = promiseFolder;
-          return true
-        } )
-      } )
-    } )
-    return true
+          return true;
+        } );
+      } );
+    } );
+    return true;
   }
 
   loadFiles(): boolean {
-    const files = this.store.collection( this.currentStructure, sort => sort.orderBy( 'intent', 'asc' ) ).get()
-    let fileArray: File[] = []
+    const files = this.store.collection( this.currentStructure, sort => sort.orderBy( 'intent', 'asc' ) ).get();
+    let fileArray: File[] = [];
     files.subscribe( filesData => {
       filesData.forEach( async fileData => {
         if ( fileData.exists ) {
-          const get_type = fileData.data() as File
+          const get_type = fileData.data() as File;
 
           if ( get_type.type === 'file' ) {
-            const fileData_reply = fileData.data() as File
+            const fileData_reply = fileData.data() as File;
             const file: File = {
               fileName: '' + fileData_reply.fileName,
               ref: fileData_reply.ref,
@@ -195,7 +196,7 @@ export class DataService {
               url: "",
               iframeUrl: "about:blank",
               extension: ""
-            }
+            };
 
             file.url = await this.storage.ref( file.ref ).getDownloadURL().toPromise();
             const regex = file.url.match( /\.([0-9a-z]+)\?alt/i );
@@ -207,13 +208,13 @@ export class DataService {
           }
         }
 
-        this.managerStructure.files = fileArray
+        this.managerStructure.files = fileArray;
         this.delayedIframeLoad();
         this.isOrderUploaded();
-      } )
-    } )
-    this.isOrderUploaded()
-    return true
+      } );
+    } );
+    this.isOrderUploaded();
+    return true;
   }
 
   delayedIframeLoad() {
@@ -265,9 +266,9 @@ export class DataService {
 * @todo -Open folders when double clicked
 */
   folderDoubleClicked( ref: String, type: String ) {
-    console.log( 'Double clicked' )
-    this.managerStructure.folders = []
-    const structure_update = this.checkStructure( ref, type )
+    console.log( 'Double clicked' );
+    this.managerStructure.folders = [];
+    const structure_update = this.checkStructure( ref, type );
 
     this.store.collection( `${structure_update}` ).get().subscribe( structures => {
       structures.forEach( structure => {
@@ -277,14 +278,14 @@ export class DataService {
           if ( file.type === 'file' )
             this.managerStructure.files.push( file );
           if ( folder.folderName )
-            this.managerStructure.folders.push( structure.data() as Folder )
+            this.managerStructure.folders.push( structure.data() as Folder );
         }
-      } )
+      } );
 
       this.setManagerStructure();
       this.delayedIframeLoad();
-      this.isOrderUploaded()
-      this.loadComments()
+      this.isOrderUploaded();
+      this.loadComments();
     } );
   }
 
@@ -296,49 +297,49 @@ export class DataService {
    */
   checkStructure( ref: String, type: String ): String {
     switch ( type ) {
-      case this.fileManagerTableName:
-        this.currentStructure = this.fileManagerTableName
-        this.setUrlStructure()
-        this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } )
-        return this.fileManagerTableName
+      case this.ORDERS:
+        this.currentStructure = this.ORDERS;
+        this.setUrlStructure();
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        return this.ORDERS;
       case 'user':
-        this.currentStructure += `/${ref}/years`
-        this.setUrlStructure()
-        console.log( 'current structure is: ', this.currentStructure )
-        this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } )
-        return this.currentStructure
+        this.currentStructure += `/${ref}/years`;
+        this.setUrlStructure();
+        console.log( 'current structure is: ', this.currentStructure );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        return this.currentStructure;
       case 'year':
-        this.currentStructure += `/${ref}/months`
-        this.setUrlStructure()
-        console.log( 'current structure is: ', this.currentStructure )
-        this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } )
-        return this.currentStructure
+        this.currentStructure += `/${ref}/months`;
+        this.setUrlStructure();
+        console.log( 'current structure is: ', this.currentStructure );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        return this.currentStructure;
       case 'month':
-        this.currentStructure += `/${ref}/orders`
-        this.setUrlStructure()
-        console.log( 'current structure is: ', this.currentStructure )
-        this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } )
-        return this.currentStructure
+        this.currentStructure += `/${ref}/orders`;
+        this.setUrlStructure();
+        console.log( 'current structure is: ', this.currentStructure );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        return this.currentStructure;
       case 'order':
-        this.currentStructure += `/${ref}/files`
-        this.setUrlStructure()
-        console.log( 'current structure is: ', this.currentStructure )
-        this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } )
-        return this.currentStructure
-      default: return this.fileManagerTableName
+        this.currentStructure += `/${ref}/files`;
+        this.setUrlStructure();
+        console.log( 'current structure is: ', this.currentStructure );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        return this.currentStructure;
+      default: return this.ORDERS;
     }
   }
 
   structureHome(): void {
     this.currentJoinGroup = undefined;
-    this.currentStructure = this.fileManagerTableName + "//";
+    this.currentStructure = this.ORDERS + "//";
     this.structureBack();
   }
 
   structureSet( address: string ): void {
     this.currentJoinGroup = undefined;
     this.currentStructure = address;
-    this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } )
+    this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
     this.managerStructure.folders = [];
     this.managerStructure.files = [];
     this.messageShowed = false;
@@ -360,7 +361,7 @@ export class DataService {
         }
       } );
 
-      
+
       this.loadComments();
       this.setManagerStructure();
       this.isOrderUploaded();
@@ -374,36 +375,36 @@ export class DataService {
    */
   structureBack() {
     this.currentJoinGroup = undefined;
-    if ( this.currentStructure !== this.fileManagerTableName ) {
+    if ( this.currentStructure !== this.ORDERS ) {
       this.messageShowed = false;
 
       const set_structure = this.currentStructure.slice( 0, this.currentStructure.lastIndexOf( "/" ) );
       this.currentStructure = set_structure.slice( 0, set_structure.lastIndexOf( "/" ) );
-      this.setUrlStructure()
-      this.managerStructure.folders = []
-      this.managerStructure.files = []
-      this.store.doc( `users/${this.user.uid}` ).update( { managerLastRef: `${this.currentStructure}` } )
-      let promise: any[] = []
+      this.setUrlStructure();
+      this.managerStructure.folders = [];
+      this.managerStructure.files = [];
+      this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: `${this.currentStructure}` } );
+      let promise: any[] = [];
       this.store.collection( `${this.currentStructure}`, sort =>
         sort.orderBy( 'folderName', 'asc' ) ).get().subscribe( structures => {
           structures.forEach( structure => {
             if ( structure ) {
-              promise.push( '0' )
+              promise.push( '0' );
               let check_files = structure.data() as Folder;
               let check_folders = structure.data() as File;
 
               if ( check_files.type === 'file' )
-                this.managerStructure.files.push( structure.data() as File )
+                this.managerStructure.files.push( structure.data() as File );
               if ( !( check_folders.type === 'file' ) )
-                this.managerStructure.folders.push( structure.data() as Folder )
+                this.managerStructure.folders.push( structure.data() as Folder );
             }
-          } )
+          } );
           Promise.all( promise ).then( () => {
             this.delayedIframeLoad();
-            this.isOrderUploaded()
-            this.loadComments()
-          } )
-        } )
+            this.isOrderUploaded();
+            this.loadComments();
+          } );
+        } );
     }
   }
 
@@ -412,7 +413,7 @@ export class DataService {
    */
   getCurrentStructureFolderType() {
     if ( this.currentStructure.match( '^.*/files$' ) ) {
-      return true
+      return true;
     } else {
       return false;
     }
@@ -425,33 +426,33 @@ export class DataService {
    */
   addFile( event: any, type: string ) {
     const is_file_exisit = this.storage.storage.ref( `${this.currentStructure}/${event.target.files[0].name}` ).getMetadata().catch( error => {
-      console.log( 'its not an error', error.code )
+      console.log( 'its not an error', error.code );
       if ( error.code === 'storage/object-not-found' ) {
         const file = event.target.files[0];
         const filePath = `${this.currentStructure}/${event.target.files[0].name}`;
         const ref = this.storage.ref( filePath );
-        const task = ref.put( file, { customMetadata: { type: type } } )
-        console.log( 'download url is: ' + ref.getDownloadURL() )
+        const task = ref.put( file, { customMetadata: { type: type } } );
+        console.log( 'download url is: ' + ref.getDownloadURL() );
         this.isFileUploading = true;
-        this.fileUploadProgressValue = task.percentageChanges()
+        this.fileUploadProgressValue = task.percentageChanges();
         task.snapshotChanges().pipe(
           finalize( () => {
-            const firebase_name = type === 'other' ? event.target.files[0].name : type
+            const firebase_name = type === 'other' ? event.target.files[0].name : type;
             this.store.doc( `${this.currentStructure}/${firebase_name}` ).set( { fileName: event.target.files[0].name, ref: filePath, type: 'file', intent: type } ).then( () => {
-              this.isFileUploading = false
-              this.fileUploadProgressValue = undefined
-              this.setManagerStructure()
-            } )
+              this.isFileUploading = false;
+              this.fileUploadProgressValue = undefined;
+              this.setManagerStructure();
+            } );
           } )
         )
-          .subscribe()
+          .subscribe();
       }
-    } )
+    } );
     is_file_exisit.then( meta => {
       if ( meta ) {
-        this.dialogService.openSimpleDialog( 'Ten plik już istnieje', 'ok', 'warning' )
+        this.dialogService.openSimpleDialog( 'Ten plik już istnieje', 'ok', 'warning' );
       }
-    } )
+    } );
   }
 
 
@@ -460,35 +461,35 @@ export class DataService {
    * @param file -Clicked file from context menu that will be deleted
    */
   deleteFile( file: File ) {
-    this.closeContextMenu()
-    this.isFoldersLoading = true
+    this.closeContextMenu();
+    this.isFoldersLoading = true;
     switch ( file.intent ) {
       case 'carrierOrder':
         this.store.doc( `${this.currentStructure}/${file.intent}` ).delete().then( () => {
-          const storageRef = this.storage.storage.ref()
+          const storageRef = this.storage.storage.ref();
           storageRef.child( `${file.ref}` ).delete().then( () => {
-            this.setManagerStructure()
-            this.isFoldersLoading = false
-          } )
-        } )
+            this.setManagerStructure();
+            this.isFoldersLoading = false;
+          } );
+        } );
         break;
       case 'clientOrder':
         this.store.doc( `${this.currentStructure}/${file.intent}` ).delete().then( () => {
-          const storageRef = this.storage.storage.ref()
+          const storageRef = this.storage.storage.ref();
           storageRef.child( `${file.ref}` ).delete().then( () => {
-            this.setManagerStructure()
-            this.isFoldersLoading = false
-          } )
-        } )
+            this.setManagerStructure();
+            this.isFoldersLoading = false;
+          } );
+        } );
         break;
       case 'other':
         this.store.doc( `${this.currentStructure}/${file.fileName}` ).delete().then( () => {
-          const storageRef = this.storage.storage.ref()
+          const storageRef = this.storage.storage.ref();
           storageRef.child( `${file.ref}` ).delete().then( () => {
-            this.setManagerStructure()
-            this.isFoldersLoading = false
-          } )
-        } )
+            this.setManagerStructure();
+            this.isFoldersLoading = false;
+          } );
+        } );
         break;
 
       default:
@@ -501,8 +502,8 @@ export class DataService {
    * @param file -File that will be opened in new window
    */
   async openFile( file: File ) {
-    const storageRef = this.storage.storage.ref()
-    const url = ( await storageRef.child( `${file.ref}` ).getDownloadURL() ).toString()
+    const storageRef = this.storage.storage.ref();
+    const url = ( await storageRef.child( `${file.ref}` ).getDownloadURL() ).toString();
     window.open( url, "_blank" );
   }
 
@@ -525,16 +526,16 @@ export class DataService {
   getFileIcon( intent: String ): String {
     switch ( intent ) {
       case 'clientOrder':
-        return 'badge'
+        return 'badge';
         break;
       case 'carrierOrder':
-        return 'local_shipping'
+        return 'local_shipping';
         break;
       case 'other':
-        return 'help_center'
+        return 'help_center';
         break;
       default:
-        return 'help_center'
+        return 'help_center';
         break;
     }
   }
@@ -549,9 +550,9 @@ export class DataService {
     if ( this.managerStructure.files ) {
       this.managerStructure.files.forEach( file => {
         if ( file.intent === intent ) {
-          isDisabled = true
+          isDisabled = true;
         }
-      } )
+      } );
     }
     return isDisabled;
   }
@@ -560,39 +561,39 @@ export class DataService {
    * Sets Adres url of the current structure in filemanger frontend
    */
   async setUrlStructure() {
-    const first_change = this.currentStructure.slice( this.fileManagerTableName.length + 1 )
+    const first_change = this.currentStructure.slice( this.ORDERS.length + 1 );
     if ( first_change ) {
-      console.log( 'first change is: ', first_change )
-      const second_change = first_change.slice( 0, first_change.indexOf( '/' ) )
-      console.log( 'second change is: ', second_change )
-      const user_folder: Folder = ( await this.store.doc( `${this.fileManagerTableName}/${second_change}` ).get().toPromise() ).data() as Folder
+      console.log( 'first change is: ', first_change );
+      const second_change = first_change.slice( 0, first_change.indexOf( '/' ) );
+      console.log( 'second change is: ', second_change );
+      const user_folder: Folder = ( await this.store.doc( `${this.ORDERS}/${second_change}` ).get().toPromise() ).data() as Folder;
       this.adresUrl = user_folder.folderName;
-      const third_change_check = first_change.slice( first_change.indexOf( '/' ) ).slice().substring( 1 )
+      const third_change_check = first_change.slice( first_change.indexOf( '/' ) ).slice().substring( 1 );
       if ( third_change_check ) {
-        console.log( 'third change check is: ', third_change_check )
-        const third_change = third_change_check.slice( third_change_check.indexOf( '/' ) ).substring( 1 )
+        console.log( 'third change check is: ', third_change_check );
+        const third_change = third_change_check.slice( third_change_check.indexOf( '/' ) ).substring( 1 );
         if ( third_change ) {
-          console.log( 'third change is: ', third_change )
+          console.log( 'third change is: ', third_change );
           this.adresUrl += '/' + third_change.slice( 0, third_change.indexOf( '/' ) );
-          const fourth_change_check = third_change.slice( third_change.indexOf( '/months' ) ).substring( 7 )
-          console.log( 'foruth change check is: ', fourth_change_check )
-          const fourth_change = fourth_change_check.substring( 1 )
+          const fourth_change_check = third_change.slice( third_change.indexOf( '/months' ) ).substring( 7 );
+          console.log( 'foruth change check is: ', fourth_change_check );
+          const fourth_change = fourth_change_check.substring( 1 );
           if ( fourth_change ) {
             console.log( 'fourth change is: ', fourth_change );
-            const month = this.getMonthString( fourth_change.slice( 0, fourth_change.indexOf( '/' ) ) )
-            this.adresUrl += '/' + month
-            const fifth_change_check = fourth_change.slice( fourth_change.lastIndexOf( '/' ) ).substring( 1 )
+            const month = this.getMonthString( fourth_change.slice( 0, fourth_change.indexOf( '/' ) ) );
+            this.adresUrl += '/' + month;
+            const fifth_change_check = fourth_change.slice( fourth_change.lastIndexOf( '/' ) ).substring( 1 );
             if ( fifth_change_check === 'files' ) {
-              console.log( 'fifth change check is: ', fifth_change_check )
-              const fifth_change = fourth_change.slice( fourth_change.indexOf( 'orders/' ), fourth_change.lastIndexOf( '/' ) ).substring( 7 )
-              console.log( 'fifth change is: ', fifth_change )
-              this.adresUrl += '/' + fifth_change
+              console.log( 'fifth change check is: ', fifth_change_check );
+              const fifth_change = fourth_change.slice( fourth_change.indexOf( 'orders/' ), fourth_change.lastIndexOf( '/' ) ).substring( 7 );
+              console.log( 'fifth change is: ', fifth_change );
+              this.adresUrl += '/' + fifth_change;
             }
           }
         }
       }
     } else {
-      this.adresUrl = ''
+      this.adresUrl = '';
     }
   }
 
@@ -604,43 +605,43 @@ export class DataService {
   getMonthString( number: string ): string {
     switch ( number ) {
       case '1':
-        return 'Styczeń'
+        return 'Styczeń';
         break;
       case '2':
-        return 'Luty'
+        return 'Luty';
         break;
       case '3':
-        return 'Marzec'
+        return 'Marzec';
         break;
       case '4':
-        return 'Kwiecień'
+        return 'Kwiecień';
         break;
       case '5':
-        return 'Maj'
+        return 'Maj';
         break;
       case '6':
-        return 'Czerwiec'
+        return 'Czerwiec';
         break;
       case '7':
-        return 'Lipiec'
+        return 'Lipiec';
         break;
       case '8':
-        return 'Sierpień'
+        return 'Sierpień';
         break;
       case '9':
-        return 'Wrzesień'
+        return 'Wrzesień';
         break;
       case '10':
-        return 'Październik'
+        return 'Październik';
         break;
       case '11':
-        return 'Listopad'
+        return 'Listopad';
         break;
       case '12':
-        return 'Grudzień'
+        return 'Grudzień';
         break;
 
-      default: return ''
+      default: return '';
         break;
     }
   }
@@ -650,8 +651,8 @@ export class DataService {
    */
   isOrderUploaded() {
     if ( this.currentStructure.slice( this.currentStructure.lastIndexOf( '/' ) ).substring( 1 ) === 'orders' ) {
-      console.log( 'checking if orders are uploaded inside of all folders' )
-      console.log( 'folders count is: ', this.managerStructure.folders.length )
+      console.log( 'checking if orders are uploaded inside of all folders' );
+      console.log( 'folders count is: ', this.managerStructure.folders.length );
       this.managerStructure.folders.forEach( async folder => {
 
         const uploadCheckJobs = [
@@ -663,28 +664,28 @@ export class DataService {
           folder.correction = ( results[0].exists && results[1].exists );
         } );
 
-      } )
+      } );
     }
     if ( this.currentStructure.slice( this.currentStructure.lastIndexOf( '/' ) ).substring( 1 ) === 'files' ) {
-      let clientUploaded = 'Brak zlecenia od klienta!'
-      let carrierUploaded = 'Brak zlecenia dla przewoźnika!'
-      console.log( 'checking if orders are uploaded arleady in folder' )
+      let clientUploaded = 'Brak zlecenia od klienta!';
+      let carrierUploaded = 'Brak zlecenia dla przewoźnika!';
+      console.log( 'checking if orders are uploaded arleady in folder' );
       this.managerStructure.files.forEach( file => {
         if ( file.intent === 'carrierOrder' )
-          carrierUploaded = ''
+          carrierUploaded = '';
         if ( file.intent === 'clientOrder' )
-          clientUploaded = ''
-      } )
-      const adres_to_update = this.currentStructure.slice( 0, this.currentStructure.lastIndexOf( '/' ) )
+          clientUploaded = '';
+      } );
+      const adres_to_update = this.currentStructure.slice( 0, this.currentStructure.lastIndexOf( '/' ) );
       this.store.doc<Folder>( adres_to_update ).get().subscribe( folder => {
-        let folderData = folder.data() as Folder
+        let folderData = folder.data() as Folder;
         if ( !folderData.canceled ) {
           this.isClientOrderUploaded = clientUploaded;
           this.isCarrerOrderUploaded = carrierUploaded;
         } else {
-          this.isClientOrderUploaded = 'Zlecenie zostało anulowane!'
+          this.isClientOrderUploaded = 'Zlecenie zostało anulowane!';
         }
-      } )
+      } );
     }
     else {
       this.isClientOrderUploaded = '';
@@ -699,40 +700,45 @@ export class DataService {
    */
   checkRole( isAdmin: boolean ): string {
     if ( isAdmin )
-      return 'Admin'
+      return 'Admin';
     else
-      return 'Spedytor'
+      return 'Spedytor';
   }
+
+
 
   /**
    * Set user as Admin
    * @param uid -uid of user that will be set as admin
    */
   setAdmin( uid: string ) {
-    this.store.doc( `users/${uid}` ).update( { isAdmin: true, doNotLogout: true } )
+    this.store.doc( `${this.USERS}/${uid}` ).update( { isAdmin: true, doNotLogout: true } );
   }
+
   /**
    * Disable admin of user
    * @param uid -uid of user that will be disabled from admin
    */
   disableAdmin( uid: string ) {
-    this.store.doc( `users/${uid}` ).update( { isAdmin: false, doNotLogout: false } )
+    this.store.doc( `${this.USERS}/${uid}` ).update( { isAdmin: false, doNotLogout: false } );
   }
+
   async hideFolders( uid: string ) {
-    const user: User = await ( await this.store.doc( `users/${uid}` ).get().toPromise() ).data() as User
-    this.store.doc( `users/${user.uid}` ).update( { foldersHidden: true } ).then( () => {
-      this.store.doc( `${this.fileManagerTableName}/${user.idPrac}` ).update( { hidden: true } ).catch(
+    const user: User = await ( await this.store.doc( `${this.USERS}/${uid}` ).get().toPromise() ).data() as User;
+    this.store.doc( `${this.USERS}/${user.uid}` ).update( { foldersHidden: true } ).then( () => {
+      this.store.doc( `${this.ORDERS}/${user.idPrac}` ).update( { hidden: true } ).catch(
         error => this.dialogService.openSimpleDialog( 'Użytkownik nie posiada folderów', 'OK', 'neutral' )
-      )
-    } )
+      );
+    } );
   }
+
   async showFolders( uid: string ) {
-    const user: User = await ( await this.store.doc( `users/${uid}` ).get().toPromise() ).data() as User
-    this.store.doc( `users/${user.uid}` ).update( { foldersHidden: false } ).then( () => {
-      this.store.doc( `${this.fileManagerTableName}/${user.idPrac}` ).update( { hidden: false } ).catch(
+    const user: User = await ( await this.store.doc( `${this.USERS}/${uid}` ).get().toPromise() ).data() as User;
+    this.store.doc( `${this.USERS}/${user.uid}` ).update( { foldersHidden: false } ).then( () => {
+      this.store.doc( `${this.ORDERS}/${user.idPrac}` ).update( { hidden: false } ).catch(
         error => this.dialogService.openSimpleDialog( 'Użytkownik nie posiada folderów', 'OK', 'neutral' )
-      )
-    } )
+      );
+    } );
   }
 
   /**
@@ -742,9 +748,9 @@ export class DataService {
    */
   checkFoldersActive( hidden: boolean ): string {
     if ( hidden )
-      return 'Ukryte'
+      return 'Ukryte';
     else
-      return 'Aktywne'
+      return 'Aktywne';
   }
   /**
    * Checks if useridPrac is same as ref given to function
@@ -754,10 +760,10 @@ export class DataService {
   getUserIdPrac( ref: string ): boolean {
     if ( ref == this.user.idPrac?.toString() ) {
       if ( this.user.foldersHidden )
-        return false
-      else return true
+        return false;
+      else return true;
     } else {
-      return false
+      return false;
     }
 
   }
@@ -767,54 +773,54 @@ export class DataService {
    * @param user -User that will be logedOut from Spedtrans
    */
   async spedTransLogOutUser( user: User ) {
-    this.IsUserTableLoading = true
-    let api_request = {} as LogoutSpedTransRequest
-    api_request.initials = user.initials
+    this.IsUserTableLoading = true;
+    let api_request = {} as LogoutSpedTransRequest;
+    api_request.initials = user.initials;
     api_request.sid = localStorage.getItem( 'sid' )!;
-    console.log( 'Current sid is: ', api_request.sid )
-    let api_response = {} as LogoutSpedTransReply
+    console.log( 'Current sid is: ', api_request.sid );
+    let api_response = {} as LogoutSpedTransReply;
     api_response = ( await this.http.post( `${this.apiAdres}/logoutSpedTrans`, api_request ).toPromise().catch(
       error => {
-        this.dialogService.openSimpleDialog( 'Nie nawiązano połączenia', 'OK', 'warning' )
-        this.IsUserTableLoading = false
-      } ) as LogoutSpedTransReply )
+        this.dialogService.openSimpleDialog( 'Nie nawiązano połączenia', 'OK', 'warning' );
+        this.IsUserTableLoading = false;
+      } ) as LogoutSpedTransReply );
     if ( api_response.result ) {
-      console.log( 'response is: ', api_response.result )
-      this.store.doc<User>( `users/${user.uid}` ).update( { inLogUsers: false } ).then( () => {
-        this.dialogService.openSimpleDialog( `${user.firstName} ${user.lastName} został wylogowany ze SpedTransa`, 'OK', 'positive' )
-        this.IsUserTableLoading = false
-      } )
-    } else this.IsUserTableLoading = false
+      console.log( 'response is: ', api_response.result );
+      this.store.doc<User>( `${this.USERS}/${user.uid}` ).update( { inLogUsers: false } ).then( () => {
+        this.dialogService.openSimpleDialog( `${user.firstName} ${user.lastName} został wylogowany ze SpedTransa`, 'OK', 'positive' );
+        this.IsUserTableLoading = false;
+      } );
+    } else this.IsUserTableLoading = false;
   }
 
   checkIfAdmin(): boolean {
     if ( this.user.isAdmin )
-      return true
+      return true;
     else
-      return false
+      return false;
   }
 
   setAutoLogOffTime() {
-    this.store.doc<Sql>( 'config/sql' ).update( { spedTransLogTime: this.spedTransLogTimeSetter } ).then( () => {
-      this.spedTransLogTimeSetter = null
-    } )
+    this.store.doc<Sql>( 'rns-config/sql' ).update( { spedTransLogTime: this.spedTransLogTimeSetter } ).then( () => {
+      this.spedTransLogTimeSetter = null;
+    } );
   }
 
   addCommentToFolder() {
-    this.isFoldersLoading = true
+    this.isFoldersLoading = true;
     console.log( 'current comments are: ', this.currentComments );
-    console.log( 'current comments to add are: ', this.currentCommentsToAdd )
+    console.log( 'current comments to add are: ', this.currentCommentsToAdd );
     if ( this.currentCommentsToAdd ) {
-      this.currentCommentsToAdd.comments.push( { author: this.user.firstName + ' ' + this.user.lastName, dateCreated: new Date(), comment: this.commentToAdd } )
+      this.currentCommentsToAdd.comments.push( { author: this.user.firstName + ' ' + this.user.lastName, dateCreated: new Date(), comment: this.commentToAdd } );
     } else {
-      this.currentCommentsToAdd = { comments: [{ author: this.user.firstName + ' ' + this.user.lastName, dateCreated: new Date(), comment: this.commentToAdd }] }
+      this.currentCommentsToAdd = { comments: [{ author: this.user.firstName + ' ' + this.user.lastName, dateCreated: new Date(), comment: this.commentToAdd }] };
     }
     this.store.doc( `${this.currentStructure}/comments` ).set( this.currentCommentsToAdd ).then( () => {
-      this.isFoldersLoading = false
+      this.isFoldersLoading = false;
       this.dialogService.openSimpleDialog( 'Dodano komentarz', 'OK', 'positive' );
-      this.commentToAdd = ''
-    } )
-    this.loadComments()
+      this.commentToAdd = '';
+    } );
+    this.loadComments();
   }
 
   getCommentsCount(): number {
@@ -822,7 +828,7 @@ export class DataService {
       return this.currentComments.length;
     }
     else {
-      return 0
+      return 0;
     }
   }
 
@@ -835,16 +841,16 @@ export class DataService {
 
   loadComments() {
     this.store.doc<Comments>( `${this.currentStructure}/comments` ).get().subscribe( comments => {
-      this.currentCommentsToAdd = comments.data() as Comments
-      this.currentComments = []
+      this.currentCommentsToAdd = comments.data() as Comments;
+      this.currentComments = [];
       if ( this.currentCommentsToAdd ) {
         for ( let index = 0; index < this.currentCommentsToAdd.comments.length; index++ ) {
           const comment_add = {
             author: this.currentCommentsToAdd.comments[index].author,
             dateCreated: this.currentCommentsToAdd.comments[index].dateCreated.toDate(),
             comment: this.currentCommentsToAdd.comments[index].comment
-          }
-          this.currentComments.push( comment_add )
+          };
+          this.currentComments.push( comment_add );
         }
       }
 
@@ -868,56 +874,56 @@ export class DataService {
           } );
         }
       } );
-    }    
+    }
   }
 
   cancelOrder() {
-    const adres_to_update = this.currentStructure.slice( 0, this.currentStructure.lastIndexOf( '/' ) )
+    const adres_to_update = this.currentStructure.slice( 0, this.currentStructure.lastIndexOf( '/' ) );
     this.store.doc( adres_to_update ).update( { canceled: true } ).then( () => {
-      this.setManagerStructure()
-      this.commentToAdd = 'Zlecenie zostało anulowane!'
+      this.setManagerStructure();
+      this.commentToAdd = 'Zlecenie zostało anulowane!';
       this.addCommentToFolder();
-      this.dialogService.openSimpleDialog( 'Zlecenie zostało anulowane!', 'OK', 'positive' )
-    } )
+      this.dialogService.openSimpleDialog( 'Zlecenie zostało anulowane!', 'OK', 'positive' );
+    } );
   }
 
   getLoggedTime( uid: string, loggedIn: boolean ): string | undefined | null {
-    const min: TimerCounter | undefined = this.userTimerCounters.find( i => i.uid == uid )
+    const min: TimerCounter | undefined = this.userTimerCounters.find( i => i.uid == uid );
     if ( min && loggedIn ) {
       if ( min.timer )
-        return "| " + min.timer + 'm'
-      else return ""
+        return "| " + min.timer + 'm';
+      else return "";
     }
     else {
       const timer_index = this.userTimerCounters.findIndex( i => i.uid == uid );
       if ( this.userTimerCounters[timer_index] ) {
-        console.log( 'timer_index is: ', timer_index )
-        this.userTimerCounters.splice( timer_index, 1 )
-        console.log( 'The user of uid: ' + uid + ' timer has been deleted: ' )
+        console.log( 'timer_index is: ', timer_index );
+        this.userTimerCounters.splice( timer_index, 1 );
+        console.log( 'The user of uid: ' + uid + ' timer has been deleted: ' );
       }
-      return ''
+      return '';
     }
   }
 
   setLoggedTime( user: User ) {
-    this.userTimerCounters.push( { uid: user.uid, timeLoggedIn: user.logUsersDate, timer: '' } )
-    const timer_index = this.userTimerCounters.length - 1
+    this.userTimerCounters.push( { uid: user.uid, timeLoggedIn: user.logUsersDate, timer: '' } );
+    const timer_index = this.userTimerCounters.length - 1;
     if ( this.userTimerCounters[timer_index] ) {
       const date_now_sec = new Date().getTime();
       const logged_in_sec = user.logUsersDate.toDate().getTime();
       const timer_min = Math.round( ( date_now_sec - logged_in_sec ) / 60000 );
-      this.userTimerCounters[timer_index].timer = timer_min.toString()
+      this.userTimerCounters[timer_index].timer = timer_min.toString();
     }
     var interval = setInterval( () => {
       if ( this.userTimerCounters[timer_index] ) {
         const date_now_sec = new Date().getTime();
         const logged_in_sec = user.logUsersDate.toDate().getTime();
         const timer_min = Math.round( ( date_now_sec - logged_in_sec ) / 60000 );
-        this.userTimerCounters[timer_index].timer = timer_min.toString()
+        this.userTimerCounters[timer_index].timer = timer_min.toString();
       } else {
         clearInterval( interval );
       }
-    }, 10000 )
+    }, 10000 );
   }
 
 }

@@ -18,8 +18,11 @@ export class UsersComponent implements AfterViewInit {
     public dataService: DataService,
   ) { }
 
+  // collections
+  public readonly USERS = 'rns-users';
+
   ngAfterViewInit(): void {
-    this.dataService.store.collection('users').valueChanges().subscribe(users => {
+    this.dataService.store.collection( this.USERS ).valueChanges().subscribe(users => {
       this.dataService.users_table_data = users as User[]
       this.dataService.users_table_data.forEach(user => {
         if(user.logUsersDate && user.inLogUsers) {

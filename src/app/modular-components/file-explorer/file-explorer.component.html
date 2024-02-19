@@ -167,7 +167,7 @@
   <div [style.height.px]="getSideNavContentHeight()" class="file-content-container">
     <div class="file-content-right">
       <div class="content-right-toolbar">
-        <h3>TFT-Zlecenia<span *ngIf="dataService.adresUrl">/</span>{{ dataService.adresUrl }}</h3>
+        <h3>Road&Sea<span *ngIf="dataService.adresUrl">/</span>{{ dataService.adresUrl }}</h3>
       </div>
       <mat-progress-bar *ngIf="dataService.isFoldersLoading" mode="indeterminate"></mat-progress-bar>
       <mat-progress-bar *ngIf="dataService.isFileUploading" mode="determinate"
@@ -209,12 +209,12 @@
 
           <embed class="thumbnail" *ngIf="file.iframeUrl !== 'about:blank' &&
                                           file.extension === 'pdf'"
-            [src]="file.iframeUrl ?? 'about:blank' | safe: 'resourceUrl'" width="320" height="450" scrolling="no"
+            [src]="file.iframeUrl || 'about:blank' | safe: 'resourceUrl'" width="320" height="450" scrolling="no"
             seamless="seamless" type="application/pdf">
 
           <iframe class="thumbnail" *ngIf="file.iframeUrl !== 'about:blank' &&
                                            file.extension !== 'pdf'" scrolling="no" seamless="seamless"
-            [src]="file.iframeUrl ?? 'about:blank' | safe: 'resourceUrl'" width='320' height='450' frameborder='0'
+            [src]="file.iframeUrl || 'about:blank' | safe: 'resourceUrl'" width='320' height='450' frameborder='0'
             onload="">
           </iframe>
 
@@ -246,4 +246,4 @@
 <!--- block clicks when loading --->
 <div class="block-clicks" *ngIf="dataService.isFoldersLoading || dataService.isFileUploading"></div>
 <mat-spinner diameter="200" class="block-clicks-info"
-  *ngIf="dataService.isFoldersLoading || dataService.isFileUploading"></mat-spinner>>
+  *ngIf="dataService.isFoldersLoading || dataService.isFileUploading"></mat-spinner>

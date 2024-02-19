@@ -8,7 +8,7 @@ export interface User {
     sid: string | null
     idPrac: number | null
     id: string | null
-    managerLastRef: string | null
+    managerLastRef_RS: string | null
     isAdmin: string | null
     uid: string | null
     foldersHidden: boolean

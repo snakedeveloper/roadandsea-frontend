@@ -27,7 +27,7 @@ export class DataService {
   /**
    * Envoirment variables:
    */
-  apiAdres: string = 'https://tft-rs-zlecenia-6655964ef121.herokuapp.com/'
+  apiAdres: string = 'https://tft-rs-zlecenia-6655964ef121.herokuapp.com'
   // apiAdres: string = 'http://localhost:5000';
   readonly ORDERS: string = 'rns-orders';
   readonly USERS = 'users';
@@ -130,8 +130,8 @@ export class DataService {
     this.store.doc( `${this.USERS}/${localStorage.getItem( 'uid' )}` ).get().subscribe( user => {
       if ( user ) {
         const currentuser = user.data() as User;
-        if ( currentuser.managerLastRef )
-          this.currentStructure = currentuser.managerLastRef;
+        if ( currentuser.managerLastRef_RS )
+          this.currentStructure = currentuser.managerLastRef_RS;
         this.loadComments();
         this.setUrlStructure();
         console.log( 'current structure is: ', this.currentStructure );
@@ -300,31 +300,31 @@ export class DataService {
       case this.ORDERS:
         this.currentStructure = this.ORDERS;
         this.setUrlStructure();
-        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: this.currentStructure } );
         return this.ORDERS;
       case 'user':
         this.currentStructure += `/${ref}/years`;
         this.setUrlStructure();
         console.log( 'current structure is: ', this.currentStructure );
-        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: this.currentStructure } );
         return this.currentStructure;
       case 'year':
         this.currentStructure += `/${ref}/months`;
         this.setUrlStructure();
         console.log( 'current structure is: ', this.currentStructure );
-        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: this.currentStructure } );
         return this.currentStructure;
       case 'month':
         this.currentStructure += `/${ref}/orders`;
         this.setUrlStructure();
         console.log( 'current structure is: ', this.currentStructure );
-        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: this.currentStructure } );
         return this.currentStructure;
       case 'order':
         this.currentStructure += `/${ref}/files`;
         this.setUrlStructure();
         console.log( 'current structure is: ', this.currentStructure );
-        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+        this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: this.currentStructure } );
         return this.currentStructure;
       default: return this.ORDERS;
     }
@@ -339,7 +339,7 @@ export class DataService {
   structureSet( address: string ): void {
     this.currentJoinGroup = undefined;
     this.currentStructure = address;
-    this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: this.currentStructure } );
+    this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: this.currentStructure } );
     this.managerStructure.folders = [];
     this.managerStructure.files = [];
     this.messageShowed = false;
@@ -383,7 +383,7 @@ export class DataService {
       this.setUrlStructure();
       this.managerStructure.folders = [];
       this.managerStructure.files = [];
-      this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef: `${this.currentStructure}` } );
+      this.store.doc( `${this.USERS}/${this.user.uid}` ).update( { managerLastRef_RS: `${this.currentStructure}` } );
       let promise: any[] = [];
       this.store.collection( `${this.currentStructure}`, sort =>
         sort.orderBy( 'folderName', 'asc' ) ).get().subscribe( structures => {

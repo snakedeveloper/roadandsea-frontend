@@ -202,7 +202,7 @@ export class LoginService {
    */
   async setUser() {
     const uid = localStorage.getItem( 'uid' )
-    this.dataService.store.doc( `rns-users/${uid}` ).valueChanges().subscribe( u => {
+    this.dataService.store.doc( `users/${uid}` ).valueChanges().subscribe( u => {
       this.dataService.user = u as User
       console.log( 'User is: ', this.dataService.user )
       this.dataService.navList[1].display = this.dataService.checkIfAdmin()

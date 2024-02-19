@@ -19,7 +19,7 @@ export class UsersComponent implements AfterViewInit {
   ) { }
 
   // collections
-  public readonly USERS = 'rns-users';
+  public readonly USERS = 'users';
 
   ngAfterViewInit(): void {
     this.dataService.store.collection( this.USERS ).valueChanges().subscribe(users => {

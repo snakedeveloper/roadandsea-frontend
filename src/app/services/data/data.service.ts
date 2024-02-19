@@ -27,8 +27,7 @@ export class DataService {
   /**
    * Envoirment variables:
    */
-  // apiAdres: string = 'https://tft-rs-zlecenia.herokuapp.com'
-  apiAdres: string = 'https://tft-rs-test-66214411d281.herokuapp.com'
+  apiAdres: string = 'https://tft-rs-zlecenia-6655964ef121.herokuapp.com/'
   // apiAdres: string = 'http://localhost:5000';
   readonly ORDERS: string = 'rns-orders';
   readonly USERS = 'users';
